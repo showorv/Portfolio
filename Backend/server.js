@@ -5,6 +5,11 @@ import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import cloudinary from "cloudinary"
+import { errorMiddleware } from "./middleware/error.js";
+import messageRouter from "./router/messageRoutes.js"
+
+
+
 
 const app = express()
 
@@ -28,6 +33,11 @@ app.use(fileUpload({
 const PORT = process.env.PORT || 9000;
 
 
+// router for message
+
+app.use("/api/v1/message", messageRouter)
+
+
 cloudinary.v2.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_SECRET_KEY ,
@@ -45,3 +55,5 @@ connectDB().then(()=>{
         console.log(`server is running at ${PORT}`);
     })
 })
+
+app.use(errorMiddleware);
