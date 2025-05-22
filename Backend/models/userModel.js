@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 const userSchema = new mongoose.Schema({
     fullName:{
@@ -34,6 +36,16 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     },
+    resume:{
+        public_id:{
+            type: String,
+            required: true
+        },
+        url:{
+            type: String,
+            required: true
+        }
+    },
 
     portfolioURL: {
         type: String,
@@ -45,7 +57,44 @@ const userSchema = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpire: Date
 
+},{timestamps:true})
+
+
+// hash password
+
+userSchema.pre("save", async function(next){
+    if(!this.isModified("password")){
+        return  next();
+    }
+
+    this.password = await bcrypt.hash(this.password,10)
+    next();
 })
+
+// compare with hash password
+
+userSchema.methods.comparePassword = async function(enteredPass){
+    return await bcrypt.compare(enteredPass, this.password);
+}
+
+// genereting jsonwebtoken
+
+userSchema.methods.generateJsonWebToken = function(){
+
+    if (!process.env.JWT_SECRET_KEY) {
+        throw new Error("JWT_SECRET_KEY is not defined");
+      }
+
+      
+    return jwt.sign({
+        id:this._id.toString()
+    },
+    process.env.JWT_SECRET_KEY,
+    {
+        expiresIn: process.env.JWT_EXPIRES
+    }
+    )
+}
 
 
 export const User = mongoose.model("User", userSchema)

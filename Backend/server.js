@@ -7,6 +7,7 @@ import fileUpload from "express-fileupload";
 import cloudinary from "cloudinary"
 import { errorMiddleware } from "./middleware/error.js";
 import messageRouter from "./router/messageRoutes.js"
+import userRouter from "./router/userRoutes.js"
 
 
 
@@ -36,6 +37,10 @@ const PORT = process.env.PORT || 9000;
 // router for message
 
 app.use("/api/v1/message", messageRouter)
+
+// router for user
+
+app.use("/api/v1/user", userRouter)
 
 
 cloudinary.v2.config({
