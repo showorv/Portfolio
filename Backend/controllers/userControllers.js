@@ -105,3 +105,69 @@ export const logout = catchAsyncErrors(async(req,res,next)=>{
         message:"logout "
     })
 })
+
+
+export const getUser = catchAsyncErrors(async(req,res,next)=>{
+    const user = await User.findById(req.user.id);
+
+    res.status(200).json({
+        success: true,
+        user
+    })
+})
+
+export const updateUser = catchAsyncErrors(async(req,res,next)=>{
+
+    const newUser = {
+        fullName:req.body.fullName,
+        email:req.body.email,
+        phone:req.body.phone,
+        aboutMe:req.body.aboutMe,
+        portfolioURL:req.body.portfolioURL,
+        githubURL:req.body.githubURL,
+        facebookURL:req.body.facebookURL,
+        linkedInURL:req.body.linkedInURL,
+    }
+    if(req.files && req.files.avatar){
+        const avatar = req.files.avatar
+        const user = await User.findById(req.user.id)
+        const avatarId = user.avatar.public_id
+        await cloudinary.uploader.destroy(avatarId);
+        const cloudinaryResponse = await cloudinary.uploader.upload(
+            avatar.tempFilePath,
+            {folder: "AVATARS"}
+        );
+
+        newUser.avatar = {
+            public_id: cloudinaryResponse.public_id,
+            url: cloudinaryResponse.secure_url
+        }
+    }
+    if(req.files && req.files.resume){
+        const resume = req.files.resume
+        const user = await User.findById(req.user.id)
+        const resumeId = user.resume.public_id
+        await cloudinary.uploader.destroy(resumeId);
+        const cloudinaryResponse = await cloudinary.uploader.upload(
+            resume.tempFilePath,
+            {folder: "RESUME"}
+        );
+
+        newUser.resume = {
+            public_id: cloudinaryResponse.public_id,
+            url: cloudinaryResponse.secure_url
+        }
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, newUser,{
+        new: true,
+        runValidators: true,
+        useFindAndModify: false
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "user updated",
+        user
+    })
+})
