@@ -171,3 +171,47 @@ export const updateUser = catchAsyncErrors(async(req,res,next)=>{
         user
     })
 })
+
+// update password
+
+export const updatePassword = catchAsyncErrors(async(req,res,next)=>{
+
+    const {currentPassword, newPassword, confirmPassword} = req.body;
+
+    if(!currentPassword || !newPassword || !confirmPassword){
+        return next(new ErrorHandler("please fill up all", 400))
+    }
+
+    //get the user
+    const user = await User.findById(req.user.id).select("+password");
+
+    const isPassMatched = await user.comparePassword(currentPassword);
+
+    if(!isPassMatched){
+        return next(new ErrorHandler("Incorrect current password", 400))
+    }
+
+    if(newPassword !== confirmPassword){
+        return next(new ErrorHandler("confirm password do not matched", 400))
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        message:"Password updated"
+    });
+})
+
+
+// get profile portfolio frontend because no need to sign in anyone
+
+export const getPortfolioProfile = catchAsyncErrors(async(req,res,next)=>{
+    const id = "682f687c95191e76a0ceb282"
+    const user = await User.findById(id);
+    res.status(200).json({
+        success: true,
+        user
+    })
+})

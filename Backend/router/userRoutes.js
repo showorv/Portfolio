@@ -1,5 +1,5 @@
 import express from "express"
-import { register } from "../controllers/userControllers.js";
+import { getPortfolioProfile, register, updatePassword } from "../controllers/userControllers.js";
 import { login } from "../controllers/userControllers.js";
 import { logout } from "../controllers/userControllers.js";
 import { isAuthenticated } from "../middleware/auth.js";
@@ -13,4 +13,7 @@ router.post("/login",login)
 router.get("/logout",isAuthenticated,logout)
 router.get("/me",isAuthenticated,getUser)
 router.put("/update/me", isAuthenticated, updateUser)
+router.put("/update/password", isAuthenticated, updatePassword)
+router.get("/me/portfolio",  getPortfolioProfile)
+
 export default router;
