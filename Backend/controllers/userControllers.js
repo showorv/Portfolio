@@ -4,7 +4,7 @@ import { User} from "../models/userModel.js"
 import {v2 as cloudinary} from "cloudinary"
 import { generateToken } from "../utils/jwtToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
-
+import crypto from "crypto"
 
 export const register = catchAsyncErrors(async(req,res,next)=>{
     if(!req.files || Object.keys(req.files).length === 0){
@@ -228,7 +228,7 @@ export const forgotPassword = catchAsyncErrors(async(req,res,next)=>{
     const resetToken = user.getResetPasswordToken();
     await user.save({validateBeforeSave: false})
     const resetPasswordUrl = `${process.env.DASHBOARD_URL}/password/reset/${resetToken}`;
-    const message =`Your reset password token is: \n\n ${resetPasswordUrl} \n\n if you've not requested for this please ignore`;
+    const message = `Your reset password token is: \n\n ${resetPasswordUrl} \n\n if you've not requested for this please ignore`;
 
     try {
         await sendEmail({
@@ -247,4 +247,30 @@ export const forgotPassword = catchAsyncErrors(async(req,res,next)=>{
        await user.save()
        return next(new ErrorHandler(error.message, 500))
     }
+})
+
+
+export const resetPassword = catchAsyncErrors(async(req,res,next)=>{
+    const {token} = req.params
+
+    const resetPasswordToken = crypto.createHash("sha256").update(token).digest("hex")
+
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: {$gt: Date.now()}
+    })
+
+    if(!user){
+        return next(new ErrorHandler("Reset password token is invalid or expired", 400))
+    }
+
+    if(req.body.password !== req.body.confirmPassword){
+        return next(new ErrorHandler("password and confirm password do not match", 400))
+    }
+
+    user.password = req.body.password
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpire = undefined
+    await user.save();
+    generateToken(user, "reset password successfully", 200, res)
 })
