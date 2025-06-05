@@ -3,6 +3,7 @@ import ErrorHandler from "../middleware/error.js";
 import { User} from "../models/userModel.js"
 import {v2 as cloudinary} from "cloudinary"
 import { generateToken } from "../utils/jwtToken.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 
 export const register = catchAsyncErrors(async(req,res,next)=>{
@@ -214,4 +215,36 @@ export const getPortfolioProfile = catchAsyncErrors(async(req,res,next)=>{
         success: true,
         user
     })
+})
+
+
+export const forgotPassword = catchAsyncErrors(async(req,res,next)=>{
+
+    const user = await User.findOne({email: req.body.email});
+    if(!user){
+        return next(new ErrorHandler("user not found", 400))
+    }
+
+    const resetToken = user.getResetPasswordToken();
+    await user.save({validateBeforeSave: false})
+    const resetPasswordUrl = `${process.env.DASHBOARD_URL}/password/reset/${resetToken}`;
+    const message =`Your reset password token is: \n\n ${resetPasswordUrl} \n\n if you've not requested for this please ignore`;
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: "Personal portfolio dashboard password recovery",
+            message
+        })
+
+        res.status(200).json({
+            success: true,
+            message: `Email sent to ${user.email} successfully`
+        })
+    } catch (error) {
+        user.resetPasswordToken = undefined
+        user.resetPasswordExpire = undefined
+       await user.save()
+       return next(new ErrorHandler(error.message, 500))
+    }
 })
