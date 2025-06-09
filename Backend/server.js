@@ -8,6 +8,7 @@ import cloudinary from "cloudinary"
 import { errorMiddleware } from "./middleware/error.js";
 import messageRouter from "./router/messageRoutes.js"
 import userRouter from "./router/userRoutes.js"
+import timelineRouter from "./router/timelineRoutes.js"
 
 
 
@@ -41,6 +42,10 @@ app.use("/api/v1/message", messageRouter)
 // router for user
 
 app.use("/api/v1/user", userRouter)
+
+// timeline
+
+app.use("/api/v1/timeline", timelineRouter)
 
 
 cloudinary.v2.config({
