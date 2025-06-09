@@ -6,6 +6,6 @@ const router = express.Router()
 
 router.post("/add",isAuthenticated, postTimeline)
 router.delete("/delete/:id",isAuthenticated, deleteTimeline)
-router.get("/getAll",isAuthenticated, getTimeline)
+router.get("/getAll", getTimeline)
 
 export default router;
