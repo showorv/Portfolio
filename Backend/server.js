@@ -11,6 +11,7 @@ import userRouter from "./router/userRoutes.js"
 import timelineRouter from "./router/timelineRoutes.js"
 import applicationRouter from "./router/applicationRoutes.js"
 import skillRouter from "./router/skillRoutes.js"
+import projectRouter from "./router/projectRoutes.js"
 
 
 
@@ -52,6 +53,7 @@ app.use("/api/v1/timeline", timelineRouter)
 app.use("/api/v1/application", applicationRouter)
 
 app.use("/api/v1/skill", skillRouter)
+app.use("/api/v1/project",projectRouter)
 
 
 cloudinary.v2.config({
