@@ -11,6 +11,8 @@ import { ManageSkill } from './pages/ManageSkill'
 import { ManageProject } from './pages/ManageProject'
 import { SingleProject } from './pages/SingleProject'
 import { UpdateProject } from './pages/UpdateProject'
+import NotFound from './pages/NotFound' 
+import {Toaster} from "sonner"
 
 function App() {
   return(
@@ -25,7 +27,10 @@ function App() {
         <Route path='/manage/project' element={<ManageProject/>}/>
         <Route path='/view/project/:id' element={<SingleProject/>}/>
         <Route path='/update/project/:id' element={<UpdateProject/>}/>
+
+        <Route path='*' element={<NotFound />} />
       </Routes>
+      <Toaster position='top-right'/>
    </BrowserRouter>
   )
 }
