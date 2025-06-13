@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useDispatch, useSelector } from 'react-redux';
 import { clearAllErrors, login } from '@/store/slices/userSlice';
 import { toast } from 'sonner';
+import { LoadingButton } from './subComponents/LoadingButton';
 
 export const Login = () => {
 
@@ -60,9 +61,11 @@ export const Login = () => {
                     <Input i type="password" value={password} onChange = {(e)=> setPassword(e.target.value)} required  />
                   </div>
 
-                  <Button type="button" className="w-full" onClick ={handleLogin}>
+                  {loading? <LoadingButton content={"Logging In"}/> : <Button type="button" className="w-full" onClick ={handleLogin}>
                     Login
-                  </Button>
+                  </Button>}
+
+                  
 
 
                

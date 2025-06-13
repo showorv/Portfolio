@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import './App.css'
@@ -13,8 +13,16 @@ import { SingleProject } from './pages/SingleProject'
 import { UpdateProject } from './pages/UpdateProject'
 import NotFound from './pages/NotFound' 
 import {Toaster} from "sonner"
+import { useDispatch } from 'react-redux'
+import { getUser } from './store/slices/userSlice'
 
 function App() {
+
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+      dispatch(getUser());
+  },[])
   return(
    <BrowserRouter>
       <Routes>
