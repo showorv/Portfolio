@@ -19,7 +19,7 @@ function App() {
    <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home/>}/>
-        <Route path='/login' element={<Login/>}/>
+        <Route path='/logins' element={<Login/>}/>
         <Route path='/password/forgot' element={<ForgotPass/>}/>
         <Route path='/password/reset/:token' element={<ResetPass/>}/>
         <Route path='/manage/timeline' element={<ManageTimeline/>}/>

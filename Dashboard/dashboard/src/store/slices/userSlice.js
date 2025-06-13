@@ -46,16 +46,20 @@ export const login = (email,password)=>async(dispatch)=>{
     try {
         
         const {data} = await axios.post(
-         "", 
+         "http://localhost:4000/api/v1/user/login", 
         {email,password}, 
         {withCredentials:true, headers:{"Content-Type": "application/json"}}
         );
 
-        dispatch(userSlice.actions.loginSuccess(data.user));
+        dispatch(userSlice.actions.loginSuccess(data.user||data));
         dispatch(userSlice.actions.clearAllError())
+        return data;
     } catch (error) {
-        dispatch(userSlice.actions.loginFailed(error.response.data.message))
+        dispatch(userSlice.actions.loginFailed(error?.response?.data?.message || "Login failed"));
     }
 }
 
+export const clearAllErrors = ()=>(dispatch)=>{
+    dispatch(userSlice.actions.clearAllError())
+}
 export default userSlice.reducer;
